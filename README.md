@@ -1,228 +1,101 @@
-# ✨ Task Flow - AI-Powered Task Manager
+# ⚡ TaskMaster Pro
 
-Transform your thoughts into organized tasks with AI-powered magic 🧠✨
+Transform your thoughts into organized, actionable tasks with the power of AI.
 
-![Task Flow](screenshots\image1.png)
+![TaskMaster Pro Screenshot](./screenshots/image1.png)
 
-## 🌟 Key Features
+---
 
-- 🧠 *Advanced AI-Powered Task Parsing*: Leverages OpenAI's GPT-4o for superior natural language understanding
-- 🤖 *Multi-Stage Parsing Strategy*: Uses sophisticated AI with regex fallbacks for maximum reliability
-- 🎯 *Smart Information Extraction*: Automatically identifies task names, assignees, due dates, and priorities
-- 📅 *Intelligent Date Recognition*: Understands relative dates like "tomorrow" and specific formats
-- 👤 *Contextual Assignee Detection*: Identifies people mentioned in your task descriptions
-- 🔄 *Task Management*: Edit, update, and delete tasks with a beautiful interface
-- 🎨 *Modern UI*: Clean, responsive design with soothing teal/cyan color scheme, custom animations and elegant typography
+## 🚀 Overview
 
-## 🎨 UI Design & Theme
+TaskMaster Pro is a next-generation, AI-powered task manager that turns your natural language input into structured, actionable tasks. Enjoy a beautiful, modern interface and let advanced AI handle the details—so you can focus on what matters.
 
-Task Flow features a fresh, modern UI with:
+---
 
-- *Color Palette*: Soothing gradients of teal, cyan, and blue create a calm, productive atmosphere
-- *Typography*: Custom font pairing using Outfit for body text and Plus Jakarta Sans for headings
-- *Animations*: Subtle floating animations and transitions for a lively yet professional feel
-- *Emojis*: Strategic use of emojis to improve visual hierarchy and add personality
-- *Cards & Components*: Glassmorphic UI elements with soft shadows and subtle hover effects
-- *Responsive Design*: Fully responsive layout that works beautifully on all devices
+## ✨ Features
 
-## 📸 Screenshots
+- **AI-Powered Task Parsing**: Enter tasks in plain English—AI extracts the task, assignee, due date, and priority.
+- **Smart Date & Priority Recognition**: Understands phrases like "next Monday" or "urgent" and assigns the right due date and priority.
+- **Contextual Assignee Detection**: Detects names and assigns tasks accordingly.
+- **Full Task Management**: Add, edit, complete, and delete tasks with ease.
+- **Modern, Responsive UI**: Clean design, soothing gradients, and smooth animations for a delightful experience on any device.
+- **Persistent Storage**: Your tasks are saved locally, so you never lose your progress.
 
-### Main Interface with AI Parsing
-![Task Manager Interface](screenshots\image2.jpg)
+---
 
-### Editing Tasks
-![Editing Tasks](screenshots\image3.jpg)
+## 🖼️ Screenshots
 
-## 🧠 Advanced AI Parsing Architecture
+| Main Interface | Editing Tasks |
+|:--------------:|:------------:|
+| ![](./screenshots/image2.jpg) | ![](./screenshots/image3.jpg) |
 
-This application implements a sophisticated AI-powered parsing system that transforms natural language into structured task data. Here's a deep dive into how it works:
+---
 
-### 🤖 GPT-4o Prompt Engineering
+## 🧠 How It Works
 
-The core of our system uses a carefully engineered prompt to OpenAI's GPT-4o model:
+1. **Type a task**: e.g., "Email Sarah the project update by Friday, high priority."
+2. **AI parses your input**: Extracts the action, assignee, due date, and priority.
+3. **Task is added**: Instantly appears in your task list, ready to manage.
 
-javascript
-const systemPrompt = `You are a task parsing assistant specialized in extracting structured information from natural language task descriptions.
-Output ONLY valid JSON with the following schema, and nothing else - no markdown, no code blocks, no additional text:
-{
-  "taskName": "The main task description",
-  "assignee": "The person assigned to the task (optional)",
-  "dueDate": "ISO date string (YYYY-MM-DDTHH:MM) when the task is due (optional)",
-  "priority": "P1" | "P2" | "P3" | "P4"
-}
+---
 
-VERY IMPORTANT: 
-- Respond with ONLY the JSON object, no markdown formatting, no code blocks, no explanations
-- Make sure your JSON is properly formatted and can be parsed by JSON.parse()
-- Do not use any backticks or markdown formatting in your response
+## 🛠️ Tech Stack
 
-For the taskName:
-- Extract the core action and object, remove unnecessary words and context
-- Format it as a clear, concise action item starting with a verb when possible
-- Remove assignee names, dates, times, and priority markers from the task description
-- If the input is vague, generalize it into a clear task
-- Make sure the task description is professional and actionable
+- **Frontend**: React, TypeScript, Vite
+- **UI**: Tailwind CSS, Shadcn UI
+- **AI**: OpenAI GPT-4o API
+- **State Management**: React Hooks
 
-Priority guidelines:
-- Priority P1 is critical/urgent, P2 is high, P3 is medium, P4 is low
-- If no priority is specified, use P3
-- Look for urgency words like "urgent", "critical", "important", "ASAP" to suggest P1
-- Look for terms like "when you can", "low priority", "not urgent" to suggest P4
+---
 
-Date parsing:
-- For dates, properly parse relative terms like "tomorrow", "next week", "today", etc.
-- For times, handle formats like "3pm", "15:00", "morning", "afternoon", etc.
-- If a specific time isn't given for "today", use end of day (23:59)
-- If a specific time isn't given for "tomorrow", use 9:00 AM
-- If a specific time isn't given for a date, use end of day (23:59)
-- Today's date is ${today.toISOString().split('T')[0]}
+## ⚡ Quick Start
 
-Assignee extraction:
-- Include the assignee only if it's clearly a person's name
-- Common patterns include "by [Name]", "assign to [Name]", "[Name] needs to", etc.
-- Just extract the name without titles or extra words`;
-
-
-This prompt includes:
-- Precise schema definition for structured output
-- Clear instructions for formatting task names as action items
-- Guidelines for priority level determination
-- Sophisticated date and time parsing rules
-- Contextual assignee detection patterns
-- Example-based learning with dynamic date handling
-
-### 📊 Multi-Layer JSON Processing
-
-To ensure maximum reliability, we've implemented a multi-stage JSON processing pipeline:
-
-1. *Primary Parsing* - Clean and parse the complete response:
-   javascript
-   // Clean the content to ensure it's valid JSON
-   let cleanContent = content;
-   
-   // Handle markdown code blocks
-   if (cleanContent.startsWith('json')) {
-     cleanContent = cleanContent.replace(/^json\n/, '').replace(/\n$/, '');
-   } else if (cleanContent.startsWith('')) {
-     cleanContent = cleanContent.replace(/^\n/, '').replace(/\n$/, '');
-   }
-   
-   // Remove any leading/trailing backticks and whitespace
-   cleanContent = cleanContent.replace(/^`+|`+$/g, '').trim();
-   
-   // Parse the JSON response
-   const parsedResult = JSON.parse(cleanContent);
-   
-
-2. *Fallback Regex Extraction* - If direct parsing fails:
-   javascript
-   // Try to extract just the JSON object using regex
-   const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
-   if (jsonMatch) {
-     const extractedJson = jsonMatch[0];
-     parsedResult = JSON.parse(extractedJson);
-   }
-   
-
-3. *Field-Level Pattern Extraction* - As a last resort:
-   javascript
-   // Extract fields individually using regex
-   const taskNameMatch = content.match(/"taskName"\s*:\s*"([^"]+)"/);
-   const assigneeMatch = content.match(/"assignee"\s*:\s*"([^"]+)"/);
-   const dueDateMatch = content.match(/"dueDate"\s*:\s*"([^"]+)"/);
-   const priorityMatch = content.match(/"priority"\s*:\s*"([^"]+)"/);
-   
-
-4. *Final Regex Fallback* - Traditional pattern-based parser:
-   javascript
-   // If all else fails, use the fallback regex parser
-   return parseNaturalLanguageTask(input);
-   
-
-### 🧪 Debug Mode for Transparency
-
-The system includes a debug mode for transparency and troubleshooting:
-
-javascript
-if (DEBUG_MODE) {
-  console.log('📤 Sending to OpenAI:', { 
-    input, 
-    systemPrompt: systemPrompt.substring(0, 200) + '...',
-    currentDate: today.toISOString() 
-  });
-  
-  console.log('📊 Full OpenAI response:', JSON.stringify(data, null, 2));
-  console.log('📥 Received content:', content);
-  console.log('🧹 Cleaned content:', cleanContent);
-  console.log('✅ Parsed result:', result);
-}
-
-
-### 📈 Performance Benefits
-
-This sophisticated parsing approach delivers several key benefits:
-
-1. *Improved Task Quality* - Tasks are reformatted as clear, actionable items
-2. *Higher Accuracy* - Better detection of dates, assignees, and priorities
-3. *Graceful Degradation* - Multiple fallback mechanisms ensure the system always works
-4. *Natural Language Understanding* - Handles complex phrasings, ambiguity, and casual language
-5. *Future Proofing* - The flexible architecture can be extended with additional parsing capabilities
-
-## 🚀 Setup
-
-1. Clone the repository
-2. Install dependencies:
-   bash
+1. **Clone the repository**
+2. **Install dependencies**
+   ```bash
    npm install
-   
-3. Create a .env file in the project root with your OpenAI API key:
-   
-   VITE_OPENAI_API_KEY=your_openai_api_key_here
-   VITE_DEBUG_MODE=false  # Set to true for detailed parsing logs
-   
-4. Start the development server:
-   bash
+   ```
+3. **Configure your API key**
+   - Create a `.env` file in the root:
+     ```
+     VITE_OPENAI_API_KEY=your_openai_api_key_here
+     VITE_DEBUG_MODE=false
+     ```
+4. **Run the app**
+   ```bash
    npm run dev
-   
+   ```
 
-## 💡 Usage Examples
+---
 
-Just type natural language task descriptions like:
+## 💡 Example Inputs
 
-- "📞 Call John about the proposal tomorrow at 3pm"
-- "🔥 Finish the website redesign by Friday, it's critical!"
-- "📝 When you have time, please review the documentation Sarah sent last week"
-- "📊 Send monthly report to the team by end of day on the 15th"
-- "🐛 Urgent: Fix the login bug before the demo with client tomorrow morning"
+- "Schedule team meeting for next Wednesday at 2pm, assign to Alex, high priority."
+- "Review pull requests by tomorrow."
+- "Update documentation, low priority."
 
-The AI will automatically extract:
-- ✅ Task name (formatted as an action item)
-- 👤 Assignee (when mentioned)
-- 📅 Due date and time (with intelligent defaults)
-- 🚨 Priority level (P1-P4) with visual indicators:
-  - 🔥 P1 - Critical priority
-  - ⚡ P2 - High priority
-  - 🔷 P3 - Medium priority
-  - 🌱 P4 - Low priority
+The AI will extract:
+- **Task name** (clear, actionable)
+- **Assignee** (if mentioned)
+- **Due date/time** (with smart defaults)
+- **Priority** (P1–P4, based on urgency)
 
-## 🛠 Technologies Used
+---
 
-- *Frontend*: React, TypeScript, Vite
-- *UI*: Tailwind CSS, Shadcn UI components
-- *Fonts*: Outfit (body) and Plus Jakarta Sans (headings)
-- *AI*: OpenAI GPT-4o API
-- *State Management*: React Hooks
-- *Form Handling*: React Hook Form
-- *Routing*: React Router
-- *Styling*: Tailwind with custom animations
+## 📁 Project Structure
 
-## 📚 Development
+- `components/` – UI components
+- `utils/` – Utility functions and AI parsers
+- `types/` – TypeScript types
+- `pages/` – Main app pages
 
-The codebase is organized into:
-- components/: UI components including TaskBoard and TaskTable
-- utils/: Utility functions including the AI and fallback parsers
-- types/: TypeScript type definitions
-- pages/: Main application pages
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please open issues or submit pull requests for improvements or bug fixes.
+
+---
 
 ## 📄 License
 
